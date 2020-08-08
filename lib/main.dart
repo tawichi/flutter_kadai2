@@ -2,12 +2,23 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutterkadai2/SecondRoute.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 
 //データを格納するアルバムを作る
+// You can pass any object to the arguments parameter.
+// In this example, create a class that contains a customizable
+// title and message.
+class ScreenArguments {
+  final String linoft_id;
+
+
+  ScreenArguments(this.linoft_id,);
+}
+
 class Album {
   final String linoft_id;
   final String sex;
@@ -32,6 +43,8 @@ class Album {
 
 
 class CustomListView extends StatelessWidget {
+
+
 
 
   List users = [];
@@ -64,17 +77,29 @@ class CustomListView extends StatelessWidget {
                   Text(users.linoft_id),
 
 
-                  Text(users.last_name+' '+users.first_name),
+                  Text ( users.last_name+' '+users.first_name , ),
 
                 ],),
-                Text((() {
-                    switch (users.sex) {
-                      case "0":
-                        return 'M';
-                      case "1":
-                        return 'F';
-                    }
-                  }()))
+                if(users.sex=="0") Text("M",
+                style:  TextStyle(color: Colors.blue.withOpacity(0.6),
+                fontWeight: FontWeight.bold),),
+                if(users.sex=="1") Text("F",
+                  style:  TextStyle(color: Colors.red.withOpacity(0.6),
+                  fontWeight: FontWeight.bold),),
+
+                /*Text( (() {
+
+
+
+                  switch (users.sex) {
+                    case "0":
+
+
+                      return 'M';
+                    case "1":
+                      return 'F';
+                  }
+                }()))*/
 
               ],
 
@@ -84,7 +109,32 @@ class CustomListView extends StatelessWidget {
       ),
 
       leading: Icon(Icons.perm_identity),
+      onTap:(){
+        // When the user taps the button, navigate to a named route
+        // and provide the arguments as an optional parameter.
+        Navigator.pushNamed(
+          context,
+          ExtractArgumentsScreen.routeName,
+          arguments: ScreenArguments(
+            users.linoft_id,
+          ),
+        );
+      },
 
+    );
+  }
+
+}
+class SecondRoute extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return MaterialApp(
+      routes: {
+        ExtractArgumentsScreen.routeName: (context) => ExtractArgumentsScreen(),
+      },
+      title: "画面遷移",
+      home: Text('ここにIDを渡す'),
     );
   }
 
@@ -170,6 +220,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        ExtractArgumentsScreen.routeName: (context) => ExtractArgumentsScreen(),
+      },
       title: 'Fetch Data Example',
       theme: ThemeData(
         primarySwatch: Colors.blue,
