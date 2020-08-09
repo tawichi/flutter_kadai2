@@ -28,10 +28,10 @@ Future<Album1> createAlbum1(String linoft_id) async {
     headers: {
       // 'Content-Type': 'application/json; charset=UTF-8',
     },
-    body: jsonEncode(<String, String>{
+    body: {
       'linoft_id': linoft_id,
-    }),
-  );
+    });
+
 
   if (response.statusCode == 201) {
     return Album1.fromJson(json.decode(response.body));
@@ -41,7 +41,7 @@ Future<Album1> createAlbum1(String linoft_id) async {
 }
 
 class Album1 {
-  final int linoft_id;
+  final String linoft_id;
   final String profile_text;
   final String profile_picture;
 
@@ -49,8 +49,9 @@ class Album1 {
 
   factory Album1.fromJson(Map<String, dynamic> json) {
     return Album1(
-      linoft_id: json['linoft_id'],
-      profile_text: json['profile_text'],
+      linoft_id: json['linoft_id'].toString(),
+      profile_text: json['profile_text'].toString(),
+      profile_picture: json['profile_picture'].toString()
 
 
     );
@@ -78,8 +79,10 @@ class _ExtractArgumentsScreenState extends State<ExtractArgumentsScreen> {
   @override
   Widget build(BuildContext context) {
 
-    final ScreenArguments args = ModalRoute.of(context).settings.arguments;
+    final Album args = ModalRoute.of(context).settings.arguments;
     _futureAlbum1 = createAlbum1(args.linoft_id);
+
+
 
 
     return MaterialApp(
@@ -87,60 +90,40 @@ class _ExtractArgumentsScreenState extends State<ExtractArgumentsScreen> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Create Data Example'),
-        ),
-        body: Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.all(8.0),
-          child: (_futureAlbum1 == null)
-              ? Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextField(
-                controller: _controller,
-                decoration: InputDecoration(hintText: 'Enter Title'),
-              ),
-              RaisedButton(
-                child: Text('Create Data'),
-                onPressed: () {
-                  setState(() {
-                    _futureAlbum1 = createAlbum1(args.linoft_id);
-                  });
-                },
-              ),
-            ],
-          )
-              : FutureBuilder<Album1>(
-            future: _futureAlbum1,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data.profile_picture==null)
-                  return Container();
-                Uint8List bytes = base64.decode(snapshot.data.profile_picture);
+      home:
+      Center(
+        child: FutureBuilder<Album1>(
+          future: _futureAlbum1,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data.profile_picture==null)
+                return Container();
+              Uint8List bytes = base64.decode(snapshot.data.profile_picture);
 
 
-                return Column(
+              return Scaffold(
+                appBar: AppBar(),
+                body: Column(
                   children: <Widget>[
 
-                      Image.memory(bytes),
+                    Image.memory(bytes),
 
 
 
                     Text(snapshot.data.profile_text),
                     Text(snapshot.data.linoft_id.toString())
                   ],
-                );
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Text("${snapshot.error}");
+            }
 
-              return CircularProgressIndicator();
-            },
-          ),
+            return CircularProgressIndicator();
+          },
         ),
       ),
     );
+
   }
 }

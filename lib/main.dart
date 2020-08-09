@@ -12,12 +12,12 @@ import 'package:http/http.dart' as http;
 // You can pass any object to the arguments parameter.
 // In this example, create a class that contains a customizable
 // title and message.
-class ScreenArguments {
+/*class ScreenArguments {
   final String linoft_id;
 
 
   ScreenArguments(this.linoft_id,);
-}
+}*/
 
 class Album {
   final String linoft_id;
@@ -115,9 +115,7 @@ class CustomListView extends StatelessWidget {
         Navigator.pushNamed(
           context,
           ExtractArgumentsScreen.routeName,
-          arguments: ScreenArguments(
-            users.linoft_id,
-          ),
+          arguments: users.linoft_id
         );
       },
 
@@ -183,10 +181,6 @@ Future<List<Album>> fetchAlbum() async {//ネットワークへのリクエス�
 
 
 }*/
-
-
-
-
 
 List<Album> parseProfile(String body){
   print(body);
