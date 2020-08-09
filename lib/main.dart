@@ -12,12 +12,7 @@ import 'package:http/http.dart' as http;
 // You can pass any object to the arguments parameter.
 // In this example, create a class that contains a customizable
 // title and message.
-/*class ScreenArguments {
-  final String linoft_id;
 
-
-  ScreenArguments(this.linoft_id,);
-}*/
 
 class Album {
   final String linoft_id;
@@ -86,20 +81,6 @@ class CustomListView extends StatelessWidget {
                 if(users.sex=="1") Text("F",
                   style:  TextStyle(color: Colors.red.withOpacity(0.6),
                   fontWeight: FontWeight.bold),),
-
-                /*Text( (() {
-
-
-
-                  switch (users.sex) {
-                    case "0":
-
-
-                      return 'M';
-                    case "1":
-                      return 'F';
-                  }
-                }()))*/
 
               ],
 
