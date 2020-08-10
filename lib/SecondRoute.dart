@@ -11,17 +11,7 @@ import 'package:flutterkadai2/main.dart';
 // You can pass any object to the arguments parameter.
 // In this example, create a class that contains a customizable
 // title and message.
-Image imageFromBase64String(String base64String) {
-  return Image.memory(base64Decode(base64String));
-}
 
-Uint8List dataFromBase64String(String base64String) {
-  return base64Decode(base64String);
-}
-
-String base64String(Uint8List data) {
-  return base64Encode(data);
-}
 Future<Album1> createAlbum1(String linoft_id) async {
   final http.Response response = await http.post(
     'https://linoft.com/dev1/api/linoft_practice_profile.php',
@@ -33,7 +23,8 @@ Future<Album1> createAlbum1(String linoft_id) async {
     });
 
 
-  if (response.statusCode == 201) {
+  if (response.statusCode == 200) {
+    print(json.decode(response.body));
     return Album1.fromJson(json.decode(response.body));
   } else {
     throw Exception('Failed to create Album1.');
@@ -44,6 +35,7 @@ class Album1 {
   final String linoft_id;
   final String profile_text;
   final String profile_picture;
+
 
   Album1({this.linoft_id, this.profile_text,this.profile_picture});
 
@@ -58,6 +50,18 @@ class Album1 {
   }
 }
 
+Image imageFromBase64String(String base64String) {
+  return Image.memory(base64Decode(base64String));
+}
+
+Uint8List dataFromBase64String(String base64String) {
+  return base64Decode(base64String);
+}
+
+String base64String(Uint8List data) {
+  return base64Encode(data);
+}
+
 void main() {
   runApp(ExtractArgumentsScreen());
 }
@@ -65,6 +69,7 @@ void main() {
 class ExtractArgumentsScreen extends StatefulWidget {
   static const routeName = '/extractArguments';
   ExtractArgumentsScreen({Key key}) : super(key: key);
+  List profile = [];
 
   @override
   _ExtractArgumentsScreenState createState() {
@@ -73,16 +78,15 @@ class ExtractArgumentsScreen extends StatefulWidget {
 }
 
 class _ExtractArgumentsScreenState extends State<ExtractArgumentsScreen> {
-  final TextEditingController _controller = TextEditingController();
+
   Future<Album1> _futureAlbum1;
+
 
   @override
   Widget build(BuildContext context) {
 
-    final Album args = ModalRoute.of(context).settings.arguments;
-    _futureAlbum1 = createAlbum1(args.linoft_id);
-
-
+    final String args = ModalRoute.of(context).settings.arguments;
+    _futureAlbum1 = createAlbum1(args);
 
 
     return MaterialApp(
@@ -96,9 +100,11 @@ class _ExtractArgumentsScreenState extends State<ExtractArgumentsScreen> {
           future: _futureAlbum1,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              //List<Album1> profile = snapshot.data;
               if (snapshot.data.profile_picture==null)
                 return Container();
               Uint8List bytes = base64.decode(snapshot.data.profile_picture);
+              print(snapshot.data);
 
 
               return Scaffold(
@@ -106,12 +112,14 @@ class _ExtractArgumentsScreenState extends State<ExtractArgumentsScreen> {
                 body: Column(
                   children: <Widget>[
 
-                    Image.memory(bytes),
+                    Image.memory(bytes),//bytesはイメージそのもの
+
 
 
 
                     Text(snapshot.data.profile_text),
-                    Text(snapshot.data.linoft_id.toString())
+                    Text(snapshot.data.linoft_id)
+
                   ],
                 ),
               );

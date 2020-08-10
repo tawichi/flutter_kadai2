@@ -164,7 +164,7 @@ Future<List<Album>> fetchAlbum() async {//ネットワークへのリクエス�
 }*/
 
 List<Album> parseProfile(String body){
-  print(body);
+
   final parsed = json.decode(body)['UserList'].cast<Map<String,dynamic>>();
   return parsed.map<Album>((json) => Album.fromJson(json)).toList();
 }
