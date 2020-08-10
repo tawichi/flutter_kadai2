@@ -5,14 +5,14 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutterkadai2/main.dart';
-
+import 'package:flutter/foundation.dart';
 
 
 // You can pass any object to the arguments parameter.
 // In this example, create a class that contains a customizable
 // title and message.
 
-Future<Album1> createAlbum1(String linoft_id) async {
+Future<Map> createAlbum1(String linoft_id) async {
   final http.Response response = await http.post(
     'https://linoft.com/dev1/api/linoft_practice_profile.php',
     headers: {
@@ -24,11 +24,26 @@ Future<Album1> createAlbum1(String linoft_id) async {
 
 
   if (response.statusCode == 200) {
-    print(json.decode(response.body));
-    return Album1.fromJson(json.decode(response.body));
+    //print(json.decode(response.body));
+    final parsed2 = json.decode(response.body)['UserProfile'][0];
+    print(parsed2);
+    print(parsed2['linoft_id']);
+    print(parsed2['profile_text']);
+    print(parsed2['profile_picture']);
+    return parsed2;
   } else {
     throw Exception('Failed to create Album1.');
   }
+}
+
+Album1 parseUser(String body){
+
+  final parsed1 = json.decode(body)['UserProfile'].cast<Map<String,dynamic>>();
+  final parsed2 = json.decode(body)['UserProfile'][0];
+  return parsed2;
+  return parsed1.map<Album1>((json)=> Album1.fromJson(json)).toList();
+
+
 }
 
 class Album1 {
@@ -79,7 +94,7 @@ class ExtractArgumentsScreen extends StatefulWidget {
 
 class _ExtractArgumentsScreenState extends State<ExtractArgumentsScreen> {
 
-  Future<Album1> _futureAlbum1;
+  Future<Map> _futureAlbum1;
 
 
   @override
@@ -96,19 +111,21 @@ class _ExtractArgumentsScreenState extends State<ExtractArgumentsScreen> {
       ),
       home:
       Center(
-        child: FutureBuilder<Album1>(
+        child: FutureBuilder<Map>(
           future: _futureAlbum1,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               //List<Album1> profile = snapshot.data;
-              if (snapshot.data.profile_picture==null)
+              if (snapshot.data['profile_picture']==null)
                 return Container();
-              Uint8List bytes = base64.decode(snapshot.data.profile_picture);
-              print(snapshot.data);
+              Uint8List bytes = base64.decode(snapshot.data['profile_picture']);
+              //print(snapshot.data.profile_text);//ここには来てない
 
 
               return Scaffold(
-                appBar: AppBar(),
+                appBar: AppBar(
+                  title: Text('プロフィール'),
+                ),
                 body: Column(
                   children: <Widget>[
 
@@ -117,8 +134,9 @@ class _ExtractArgumentsScreenState extends State<ExtractArgumentsScreen> {
 
 
 
-                    Text(snapshot.data.profile_text),
-                    Text(snapshot.data.linoft_id)
+                    Text(snapshot.data['profile_text']),
+                    Text(snapshot.data['linoft_id'])
+
 
                   ],
                 ),
